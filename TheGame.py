@@ -66,14 +66,15 @@ def main():
             player2_init_list.append(tem_line)
 
         #parts left of battleships and patrol boats
-        patrol_boats_1 = park_gruplarini_belirle(player1_init_list.copy())
-        patrol_boats_2 = park_gruplarini_belirle(player2_init_list.copy())
-        battleships_1 = dortlu_b_gruplarini_belirle(player1_init_list.copy())
-        battleships_2 = dortlu_b_gruplarini_belirle(player2_init_list.copy())
+        patrol_boats_1 = detect_pp_groups(player1_init_list.copy())
+        patrol_boats_2 = detect_pp_groups(player2_init_list.copy())
+        battleships_1 = detect_bbbb_groups(player1_init_list.copy())
+        battleships_2 = detect_bbbb_groups(player2_init_list.copy())
 
         output_file.write("Battle of Ships Game\n\n")
         game_finished = False
 
+        #the game starts here
         while not game_finished:
 
             #turn for player1
@@ -118,6 +119,7 @@ def main():
             print_players_ship_amounts(cbdsp1, cbdsp2, output_file)
             output_file.write(f"Enter your move: {player2_moves_list[round-1].split(',')[0]}, {player2_moves_list[round-1].split(',')[1]}\n\n")
             
+            #checking if the game is finished
             if cbdsp1 == cbdsp2 == [0,0,0,0,0]:
                 output_file.write("It's a Draw!")
                 game_finished = True
@@ -134,8 +136,8 @@ def main():
 
             round += 1
 
-
 def print_hidden_boards(output_file, p1, p2, finish):
+    #to print current boards during the game
     if finish:
         output_file.write("Player1's Board		            Player2's Board\n\n  A B C D E F G H I J		        A B C D E F G H I J\n")
     else:
@@ -166,65 +168,55 @@ def print_hidden_boards(output_file, p1, p2, finish):
         output_file.write("\n")
     output_file.write("\n")
 
-def park_gruplarini_belirle(grid):
-    satir_sayisi = 10
-    sutun_sayisi = 10
-    gruplar = []  # Grupları saklamak için liste
+def detect_pp_groups(grid):
+    groups = []
 
-    def pp_cifti_var_mi(satir, sutun):
-        # İkili "PP" yatay olarak kontrol edilir
-        if sutun + 1 < sutun_sayisi and grid[satir][sutun] == 'P' and grid[satir][sutun + 1] == 'P':
-            return [satir, sutun], [satir, sutun + 1]
-        # İkili "PP" dikey olarak kontrol edilir
-        if satir + 1 < satir_sayisi and grid[satir][sutun] == 'P' and grid[satir + 1][sutun] == 'P':
-            return [satir, sutun], [satir + 1, sutun]
+    def is_there_pp(row, col):
+        if col + 1 < 10 and grid[row][col] == 'P' and grid[row][col + 1] == 'P':
+            return [row, col], [row, col + 1]
+        if row + 1 < 10 and grid[row][col] == 'P' and grid[row + 1][col] == 'P':
+            return [row, col], [row + 1, col]
         return None
 
-    for i in range(satir_sayisi):
-        for j in range(sutun_sayisi):
+    for i in range(10):
+        for j in range(10):
             if grid[i][j] == 'P':
-                cift = pp_cifti_var_mi(i, j)
-                if cift:
-                    gruplar.append(cift)
-                    # İşaretlenen "PP" çiftlerini "Z" olarak işaretleyerek tekrar kontrol edilmelerini önleyin
-                    grid[cift[0][0]][cift[0][1]] = 'Z'
-                    grid[cift[1][0]][cift[1][1]] = 'Z'
+                twos = is_there_pp(i, j)
+                if twos:
+                    groups.append(twos)
+                    grid[twos[0][0]][twos[0][1]] = 'Z'
+                    grid[twos[1][0]][twos[1][1]] = 'Z'
 
     for i in range(4):
         for j in range(2):
-            grid[gruplar[i][j][0]][gruplar[i][j][1]] = "P"
+            grid[groups[i][j][0]][groups[i][j][1]] = "P"
 
-    return gruplar
+    return groups
 
-def dortlu_b_gruplarini_belirle(grid):
-    satir_sayisi = 10
-    sutun_sayisi = 10
-    gruplar = []  # Grupları saklamak için liste
+def detect_bbbb_groups(grid):
+    groups = []
 
-    def bbbb_dortlusu_var_mi(satir, sutun):
-        # Dörtlü "BBBB" yatay olarak kontrol edilir
-        if sutun + 3 < sutun_sayisi and all(grid[satir][sutun + i] == 'B' for i in range(4)):
-            return [(satir, sutun + i) for i in range(4)]
-        # Dörtlü "BBBB" dikey olarak kontrol edilir
-        if satir + 3 < satir_sayisi and all(grid[satir + i][sutun] == 'B' for i in range(4)):
-            return [(satir + i, sutun) for i in range(4)]
+    def is_there_bbbb(row, col):
+        if col + 3 < 10 and all(grid[row][col + i] == 'B' for i in range(4)):
+            return [(row, col + i) for i in range(4)]
+        if row + 3 < 10 and all(grid[row + i][col] == 'B' for i in range(4)):
+            return [(row + i, col) for i in range(4)]
         return None
 
-    for i in range(satir_sayisi):
-        for j in range(sutun_sayisi):
+    for i in range(10):
+        for j in range(10):
             if grid[i][j] == 'B':
-                dortlu = bbbb_dortlusu_var_mi(i, j)
-                if dortlu:
-                    gruplar.append(dortlu)
-                    # İşaretlenen "BBBB" dörtlülerini "Z" olarak işaretleyerek tekrar kontrol edilmelerini önleyin
-                    for (x, y) in dortlu:
+                fours = is_there_bbbb(i, j)
+                if fours:
+                    groups.append(fours)
+                    for (x, y) in fours:
                         grid[x][y] = 'Z'
     
     for i in range(2):
         for j in range(4):
-            grid[gruplar[i][j][0]][gruplar[i][j][1]] = "B"
+            grid[groups[i][j][0]][groups[i][j][1]] = "B"
 
-    return gruplar
+    return groups
 
 def check_the_hitten_ship(ship, grid, bat_ship, pat_boats, cbdsp):
     #check the given ship if it's sunk completely
