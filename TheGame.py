@@ -1,5 +1,5 @@
 def main():
-    with open("C:\\Users\\HP\\OneDrive\\Belgeler\\GitHub\\Battle-of-Ships\\Player1.txt", "r") as player1_init, open("C:\\Users\\HP\\OneDrive\\Belgeler\\GitHub\\Battle-of-Ships\\Player2.txt", "r") as player2_init, open("C:\\Users\\HP\\OneDrive\\Belgeler\\GitHub\\Battle-of-Ships\\Player1_moves.txt", "r") as player1_moves, open("C:\\Users\\HP\\OneDrive\\Belgeler\\GitHub\\Battle-of-Ships\\Player2_moves.txt", "r") as player2_moves, open("C:\\Users\\HP\\OneDrive\\Belgeler\\GitHub\\Battle-of-Ships\\Battleship.txt", "w") as output_file:
+    with open("path\to\player1_initial_board", "r") as player1_init, open("path\to\player2_initial_board", "r") as player2_init, open("path\to\player1_moves.txt", "r") as player1_moves, open("path\to\player2_moves.txt", "r") as player2_moves, open("path\to\output_file.txt", "w") as output_file:
         #initial ship positions of players
         player1_init_list = []
         player2_init_list = []
