@@ -78,8 +78,8 @@ def main():
 
             #turn for player1
             turn = 1
-            output_file.write(f"Player{turn}'s Move\n\nRound: {round}         Grid Size: 10x10\n\n")
-            print_hidden_boards(output_file, player1_init_list_hidden, player2_init_list_hidden)
+            output_file.write(f"Player{turn}'s Move\n\nRound: {round}  --  Grid Size: 10x10\n\n")
+            print_hidden_boards(output_file, player1_init_list_hidden, player2_init_list_hidden, False)
             row = int(player1_moves_list[round-1].split(",")[0])-1
             col = columns[player1_moves_list[round-1].split(",")[1]]
 
@@ -94,11 +94,13 @@ def main():
                 player2_init_list[row][col] = "X"
                 if check_the_hitten_ship(ship, player2_init_list, battleships_2, patrol_boats_2, cbdsp2):
                     print(f"Player2's {ship_names[ship]} has been sunk!")
+            print_players_ship_amounts(cbdsp1, cbdsp2, output_file)
+            output_file.write(f"Enter your move: {player1_moves_list[round-1].split(',')[0]}, {player1_moves_list[round-1].split(',')[1]}\n\n")
 
             #turn for player2
             turn = 2
-            output_file.write(f"Player{turn}'s Move\n\nRound: {round}         Grid Size: 10x10\n\n")
-            print_hidden_boards(output_file, player1_init_list_hidden, player2_init_list_hidden)
+            output_file.write(f"Player{turn}'s Move\n\nRound: {round}  --  Grid Size: 10x10\n\n")
+            print_hidden_boards(output_file, player1_init_list_hidden, player2_init_list_hidden, False)
             row = int(player2_moves_list[round-1].split(",")[0])-1
             col = columns[player2_moves_list[round-1].split(",")[1]]
 
@@ -113,24 +115,32 @@ def main():
                 player1_init_list[row][col] = "X"
                 if check_the_hitten_ship(ship, player1_init_list, battleships_1, patrol_boats_1, cbdsp1):
                     print(f"Player1's {ship_names[ship]} has been sunk!")
+            print_players_ship_amounts(cbdsp1, cbdsp2, output_file)
+            output_file.write(f"Enter your move: {player2_moves_list[round-1].split(',')[0]}, {player2_moves_list[round-1].split(',')[1]}\n\n")
             
             if cbdsp1 == cbdsp2 == [0,0,0,0,0]:
-                print("Draw!")
+                output_file.write("It's a Draw!")
                 game_finished = True
             elif cbdsp1 == [0,0,0,0,0]:
-                print("Player2 won!")
+                output_file.write("Player2 wins!\n\nFinal Information\n\n")
+                print_hidden_boards(output_file, player1_init_list, player2_init_list, True)
+                print_players_ship_amounts(cbdsp1, cbdsp2, output_file)
                 game_finished = True
             elif cbdsp2 == [0,0,0,0,0]:
-                print("Player1 won!")
+                output_file.write("Player1 wins!\n\nFinal Information\n\n")
+                print_hidden_boards(output_file, player1_init_list, player2_init_list, True)
+                print_players_ship_amounts(cbdsp1, cbdsp2, output_file)
                 game_finished = True
 
-
             round += 1
-            print(cbdsp1, cbdsp2, round)
 
 
-def print_hidden_boards(output_file, p1, p2):
-    output_file.write("Player1's Hidden Board		Player2's Hidden Board\n\n  A B C D E F G H I J		  A B C D E F G H I J\n")
+def print_hidden_boards(output_file, p1, p2, finish):
+    if finish:
+        output_file.write("Player1's Board		            Player2's Board\n\n  A B C D E F G H I J		        A B C D E F G H I J\n")
+    else:
+        output_file.write("Player1's Hidden Board	      Player2's Hidden Board\n\n  A B C D E F G H I J	      	  A B C D E F G H I J\n")
+
     for i in range(10):
         if i == 9:
             output_file.write(str(i+1))
@@ -144,16 +154,15 @@ def print_hidden_boards(output_file, p1, p2):
                 output_file.write(p1[i][j] + " ")
 
         if i == 9:
-            output_file.write("   " + str(i+1))
+            output_file.write("         " + str(i+1))
         else:
-            output_file.write("   " + str(i+1) + " ")
+            output_file.write("         " + str(i+1) + " ")
 
         for j in range(10):
             if j == 9:
                 output_file.write(p2[i][j])
             else:
                 output_file.write(p2[i][j] + " ")
-
         output_file.write("\n")
     output_file.write("\n")
 
@@ -275,6 +284,16 @@ def check_the_hitten_ship(ship, grid, bat_ship, pat_boats, cbdsp):
                 return True
 
     return False
+
+def print_players_ship_amounts(p1, p2, output):
+    nameslist = ["Carrier", "Battleship", "Destroyer", "Submarine", "Patrol Boats"]
+    namesdict = {"Carrier": 1, "Battleship": 2, "Destroyer": 1, "Submarine": 1, "Patrol Boats": 4}
+    for i in range(5):
+        row1 = f"{nameslist[i]}:" + (namesdict[nameslist[i]]-p1[i])*" X" + p1[i]*" -"
+        row2 = f"{nameslist[i]}:" + (namesdict[nameslist[i]]-p2[i])*" X" + p2[i]*" -"
+        row = "%-30s" % row1
+        output.write(row + row2 + "\n")
+    output.write("\n")
 
 if __name__ == "__main__":
     main()
