@@ -143,6 +143,15 @@ def print_hidden_boards(output_file, p1, p2, finish):
     else:
         output_file.write("Player1's Hidden Board	      Player2's Hidden Board\n\n  A B C D E F G H I J	      	  A B C D E F G H I J\n")
 
+<<<<<<< HEAD
+=======
+def print_hidden_boards(output_file, p1, p2, finish):
+    if finish:
+        output_file.write("Player1's Board		            Player2's Board\n\n  A B C D E F G H I J		        A B C D E F G H I J\n")
+    else:
+        output_file.write("Player1's Hidden Board	      Player2's Hidden Board\n\n  A B C D E F G H I J	      	  A B C D E F G H I J\n")
+
+>>>>>>> d9a6d2d (Oyun tamamlandı, birkaç küçük eksik var)
     for i in range(10):
         if i == 9:
             output_file.write(str(i+1))
